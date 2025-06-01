@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ShopEase - E-Commerce Platform</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .auth-btn {
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.9rem;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        .login-btn {
+            background-color: #2ecc71;
+        }
+        .login-btn:hover {
+            background-color: #27ae60;
+        }
+        .nav-btn {
+            background-color: #3498db;
+            margin-left: 0.5rem;
+        }
+        .nav-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            margin-right: 1rem;
+        }
+        .user-details small {
+            opacity: 0.8;
+            font-size: 0.8rem;
+        }
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .welcome-banner {
+            background-color: #3498db;
+            color: white;
+            padding: .5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-image {
+            height: 200px;
+            background-color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+        }
+        .product-details {
+            padding: 1rem;
+        }
+        .product-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .product-price {
+            color: #2ecc71;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .add-to-cart {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .add-to-cart:hover {
+            background-color: #2980b9;
+        }
+        .guest-message {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Quantity controls */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+        .quantity-btn {
+            background-color: #ecf0f1;
+            border: none;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        .quantity-btn:hover {
+            background-color: #bdc3c7;
+        }
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            margin: 0 0.5rem;
+            padding: 0.25rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Category tree */
+        .category-tree {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .category-list {
+            list-style: none;
+            padding: 0;
+        }
+        .category-item {
+            margin-bottom: 0.5rem;
+        }
+        .category-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        .category-link:hover {
+            background-color: #f0f7fd;
+        }
+        .subcategory-list {
+            list-style: none;
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .active-category {
+            font-weight: bold;
+            background-color: #e1f0fa;
+        }
+
+        /* Orders list */
+        .orders-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .orders-table th, .orders-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .orders-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        .orders-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+            display: inline-block;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .order-items {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .order-item {
+            margin-bottom: 3px;
+        }
+        .no-orders {
+            padding: 2rem;
+            text-align: center;
+            color: #7f8c8d;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            border-bottom-color: #3498db;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="logo">ShopEase</div>
+    <div class="user-info" id="authSection">
+        <div class="loading">
+            <div class="spinner"></div>
+        </div>
+    </div>
+</header>
+
+<div class="main-content">
+    <div id="contentArea">
+        <div class="loading">
+            <div class="spinner"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // DOM elements
+    const authSection = document.getElementById('authSection');
+    const contentArea = document.getElementById('contentArea');
+
+    // Current state
+    let currentState = {
+        activeTab: 'products',
+        currentCategory: null
+    };
+
+    // Check auth status when page loads
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const authData = await checkAuthStatus();
+            if (authData.authenticated) {
+                await renderLoggedInUI(authData);
+            } else {
+                renderLoggedOutUI();
+            }
+        } catch (error) {
+            console.error('Initialization error:', error);
+            renderLoggedOutUI();
+        }
+    });
+
+    // Check authentication status with backend
+    async function checkAuthStatus() {
+        try {
+            const response = await fetch('/api/check-auth/', {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                return { authenticated: false };
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            return { authenticated: false };
+        }
+    }
+
+    // Get user info from backend
+    async function getUserInfo() {
+        try {
+            const response = await fetch('/api/check-auth/', {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                console.log('Failed to get user info');
+                throw new Error('Failed to get user info');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+            return {
+                username: 'Guest',
+                email: 'guest@example.com'
+            };
+        }
+    }
+
+    // Render UI for logged in users
+    async function renderLoggedInUI(authData) {
+        try {
+            // Auth section - Show user info and navigation buttons
+            authSection.innerHTML = `
+                    <div class="user-details">
+                        <span>Welcome, ${authData.username || authData.email.split('@')[0]}!</span>
+                        <small>${authData.email}</small>
+                    </div>
+                    <button class="auth-btn nav-btn" id="productsBtn">Products</button>
+                    <button class="auth-btn nav-btn" id="ordersBtn">My Orders</button>
+                    <button class="auth-btn logout-btn" id="logoutBtn">Logout</button>
+                `;
+
+            // Main content - Show tabs and initial content
+            contentArea.innerHTML = `
+                    <div class="welcome-banner">
+                        <h1>Welcome back to ShopEase</h1>
+                        <p>Your one-stop shop for all your needs</p>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab ${currentState.activeTab === 'products' ? 'active' : ''}" data-tab="products">Products</div>
+                        <div class="tab ${currentState.activeTab === 'orders' ? 'active' : ''}" data-tab="orders">My Orders</div>
+                    </div>
+
+                    <div id="productsTab" class="tab-content ${currentState.activeTab === 'products' ? 'active' : ''}">
+                        <div id="productsContainer">
+                            <!-- Products will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div id="ordersTab" class="tab-content ${currentState.activeTab === 'orders' ? 'active' : ''}">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                `;
+
+            // Add event listeners to navigation buttons
+            document.getElementById('productsBtn').addEventListener('click', () => switchTab('products'));
+            document.getElementById('ordersBtn').addEventListener('click', () => switchTab('orders'));
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+            // Add event listeners to tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            // Load initial content based on active tab
+            if (currentState.activeTab === 'products') {
+                await loadProducts();
+            } else {
+                await loadOrders();
+            }
+
+        } catch (error) {
+            console.error('Error rendering logged in UI:', error);
+            renderLoggedOutUI();
+        }
+    }
+
+    // Switch between tabs
+    async function switchTab(tabName) {
+        currentState.activeTab = tabName;
+
+        // Update active tab styling
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.tab === tabName);
+        });
+
+        // Show active content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('active', content.id === `${tabName}Tab`);
+        });
+
+        // Load content if not already loaded
+        if (tabName === 'products' && !document.getElementById('categoryTree').innerHTML) {
+            await loadProducts();
+        } else if (tabName === 'orders' && document.getElementById('ordersTab').querySelector('.loading')) {
+            await loadOrders();
+        }
+    }
+
+    // Render UI for logged out users
+    function renderLoggedOutUI() {
+        // Auth section - Show login button only
+        authSection.innerHTML = `
+                <button class="auth-btn login-btn" id="loginBtn">Login</button>
+            `;
+
+        // Main content - Show guest message
+        contentArea.innerHTML = `
+                <div class="welcome-banner">
+                    <h1>Welcome to ShopEase</h1>
+                    <p>Your one-stop shop for all your needs</p>
+                </div>
+                <div class="guest-message">
+                    <p>Please login to view our products and make purchases</p>
+                </div>
+            `;
+
+        // Add login event listener
+        document.getElementById('loginBtn').addEventListener('click', redirectToLogin);
+    }
+
+    // Recursive function to render category and its subcategories
+    function renderCategory(category, allCategories, parentElement) {
+        const categoryItem = document.createElement('li');
+        categoryItem.className = 'category-item';
+
+        const categoryLink = document.createElement('a');
+        categoryLink.href = '#';
+        categoryLink.className = `category-link ${currentState.currentCategory === category.id ? 'active-category' : ''}`;
+        categoryLink.textContent = category.name;
+        categoryLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            currentState.currentCategory = category.id;
+            updateActiveCategory();
+            await loadProducts();
+        });
+        categoryItem.appendChild(categoryLink);
+
+        // Find subcategories
+        const subcategories = allCategories.filter(cat => cat.parent === category.id);
+        if (subcategories.length > 0) {
+            const subcategoryList = document.createElement('ul');
+            subcategoryList.className = 'subcategory-list';
+            categoryItem.appendChild(subcategoryList);
+
+            subcategories.forEach(subcategory => {
+                renderCategory(subcategory, allCategories, subcategoryList);
+            });
+        }
+
+        parentElement.appendChild(categoryItem);
+    }
+
+    // Update active category styling
+    function updateActiveCategory() {
+        document.querySelectorAll('.category-link').forEach(link => {
+            link.classList.remove('active-category');
+        });
+
+        if (currentState.currentCategory) {
+            const activeLink = document.querySelector(`.category-link[data-category-id="${currentState.currentCategory}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active-category');
+            }
+        } else {
+            // Highlight "All Products" link
+            const allProductsLink = document.querySelector('.category-list .category-link:first-child');
+            if (allProductsLink) {
+                allProductsLink.classList.add('active-category');
+            }
+        }
+    }
+
+    // Load products from API
+    async function loadProducts() {
+        try {
+            const productsContainer = document.getElementById('productsContainer');
+            productsContainer.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            let url = '/api/products/';
+            if (currentState.currentCategory) {
+                url += `?category=${currentState.currentCategory}`;
+            }
+
+            const response = await fetch(url, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load products');
+            }
+
+            const products = await response.json();
+
+            if (products.length === 0) {
+                productsContainer.innerHTML = '<div class="guest-message"><p>No products found in this category</p></div>';
+                return;
+            }
+
+            const productGrid = document.createElement('div');
+            productGrid.className = 'product-grid';
+            productGrid.id = 'productGrid';
+            productsContainer.innerHTML = '<h2>' + (currentState.currentCategory ? 'Products in this category' : 'All Products') + '</h2>';
+            productsContainer.appendChild(productGrid);
+
+            productGrid.innerHTML = products.map(product => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <span>${product.name}</span>
+                        </div>
+                        <div class="product-details">
+                            <div class="product-title">${product.name}</div>
+                            <div class="product-price">KES ${product.price}</div>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn minus-btn" data-product-id="${product.id}">-</button>
+                                <input type="number" class="quantity-input" data-product-id="${product.id}" value="1" min="1">
+                                <button class="quantity-btn plus-btn" data-product-id="${product.id}">+</button>
+                            </div>
+                            <button class="add-to-cart" data-product-id="${product.id}">Make Order</button>
+                        </div>
+                    </div>
+                `).join('');
+
+            // Add event listeners to quantity buttons
+            document.querySelectorAll('.plus-btn').forEach(button => {
+                button.addEventListener('click', increaseQuantity);
+            });
+
+            document.querySelectorAll('.minus-btn').forEach(button => {
+                button.addEventListener('click', decreaseQuantity);
+            });
+
+            // Add input validation for quantity inputs
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', validateQuantityInput);
+            });
+
+            // Add event listeners to cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', addToCart);
+            });
+
+        } catch (error) {
+            console.error('Error loading products:', error);
+            document.getElementById('productsContainer').innerHTML = `
+                    <div class="guest-message">
+                        <p>Failed to load products. Please try again later.</p>
+                    </div>
+                `;
+        }
+    }
+
+    // Load customer orders
+    async function loadOrders() {
+        try {
+            const ordersTab = document.getElementById('ordersTab');
+            ordersTab.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            const response = await fetch('/api/orders/', {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load orders');
+            }
+
+            const orders = await response.json();
+
+            if (orders.length === 0) {
+                ordersTab.innerHTML = `
+                    <div class="no-orders">
+                        <h3>Your Orders</h3>
+                        <p>You haven't placed any orders yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            ordersTab.innerHTML = `
+                <h3>Your Orders</h3>
+                <div class="orders-container">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            {#<!-- Orders will be populated here -->#}
+            </tbody>
+            </table>
+            </div>
+            `;
+
+            const ordersTableBody = document.getElementById('ordersTableBody');
+
+            orders.forEach(order => {
+                const orderDate = new Date(order.created_at);
+                const formattedDate = orderDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // Calculate total from items
+                const orderTotal = order.items.reduce((total, item) => {
+                    return total + parseFloat(item.total);
+                }, 0);
+
+                // Create items list
+                const itemsList = order.items.map(item =>
+                    `${item.quantity} × Product ${item.product} (KES ${item.price})`
+                ).join('<br>');
+
+                // Get status info
+                const statusInfo = getStatusInfo(order.status);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>#${order.id}</td>
+            <td>${formattedDate}</td>
+            <td><span class="status-badge ${statusInfo.class}">${statusInfo.text}</span></td>
+            <td>${itemsList}</td>
+            <td>KES ${orderTotal.toFixed(2)}</td>
+            `;
+
+                ordersTableBody.appendChild(row);
+            });
+
+        } catch (error) {
+            console.error('Error loading orders:', error);
+            document.getElementById('ordersTab').innerHTML = `
+            <div class="guest-message">
+            <p>Failed to load orders. Please try again later.</p>
+            </div>
+            `;
+        }
+    }
+
+    // Get status info (text and CSS class)
+    function getStatusInfo(status) {
+        const statusMap = {
+            'P': { text: 'Pending', class: 'status-pending' },
+            'C': { text: 'Completed', class: 'status-completed' },
+            'X': { text: 'Cancelled', class: 'status-cancelled' }
+        };
+
+        return statusMap[status] || { text: status, class: '' };
+    }
+
+    // Increase quantity
+    function increaseQuantity(event) {
+        const productId = event.target.getAttribute('data-product-id');
+        const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+        input.value = parseInt(input.value) + 1;
+    }
+
+    // Decrease quantity
+    function decreaseQuantity(event) {
+        const productId = event.target.getAttribute('data-product-id');
+        const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    }
+
+    // Validate quantity input
+    function validateQuantityInput(event) {
+        const input = event.target;
+        if (input.value < 1 || isNaN(input.value)) {
+            input.value = 1;
+        }
+    }
+
+    // Add product to cart
+    async function addToCart(event) {
+        const productId = event.target.getAttribute('data-product-id');
+        const quantityInput = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+        const quantity = parseInt(quantityInput.value) || 1;
+        const button = event.target;
+
+        try {
+            // Disable button during request
+            button.disabled = true;
+            button.textContent = 'Processing...';
+
+            const response = await fetch('/api/orders/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    items: [{
+                        product: parseInt(productId),
+                        quantity: quantity
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to add to cart');
+            }
+
+            alert('Product added to cart successfully!');
+
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert(`Error: ${error.message}`);
+        } finally {
+            // Re-enable button
+            button.disabled = false;
+            button.textContent = 'Add to Cart';
+        }
+    }
+
+    // Handle logout
+    async function handleLogout(e) {
+        e.preventDefault();
+
+        try {
+            // Clear client-side storage
+            localStorage.clear();
+            sessionStorage.clear();
+
+            // Call Django logout endpoint - Updated to use GET request
+            await fetch('http://localhost:8000/oidc/logout/', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            // Force full page reload with cache busting
+            window.location.href = '/?logout=' + Date.now();
+
+        } catch (error) {
+            console.error('Logout failed:', error);
+            window.location.href = '/';
+        }
+    }
+
+    // Redirect to login page
+    function redirectToLogin() {
+        window.location.href = '/oidc/login/';
+    }
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+</body>
+</html>

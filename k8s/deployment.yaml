@@ -1,25 +1,30 @@
+# k8s/deployment.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecommerce
+  name: ecommerce-web
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: ecommerce
+      tier: web
   template:
     metadata:
       labels:
         app: ecommerce
+        tier: web
     spec:
       containers:
-        - name: ecommerce
-          image: your-repo/ecommerce:latest
+        - name: web
+          image: your-registry/ecommerce:latest
           ports:
             - containerPort: 8000
           envFrom:
             - secretRef:
                 name: ecommerce-secrets
+            - configMapRef:
+                name: ecommerce-config
           resources:
             requests:
               cpu: "100m"
@@ -27,17 +32,5 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ecommerce
-spec:
-  selector:
-    app: ecommerce
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8000
-  type: LoadBalancer
+      imagePullSecrets:
+        - name: regcred

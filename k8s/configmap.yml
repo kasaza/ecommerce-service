@@ -1,0 +1,8 @@
+# k8s/configmap.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecommerce-config
+data:
+  DEBUG: "False"
+  ALLOWED_HOSTS: "*"

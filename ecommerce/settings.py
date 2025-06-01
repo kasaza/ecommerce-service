@@ -9,11 +9,15 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,7 +32,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
 
 # Application definition
 
@@ -45,14 +48,55 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.openid_connect',
+    'drf_yasg',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'mozilla_django_oidc',
+
+    'customers',
+    'products',
+    'orders',
+    'accounts',
 ]
 
-# INSTALLED_APPS += ['oidc_provider']
+AUTH_USER_MODEL = 'customers.Customer'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
 ]
+
+# Auth0 Configuration
+OIDC_RP_CLIENT_ID = env('OIDC_CLIENT_ID')
+OIDC_RP_CLIENT_SECRET = env('OIDC_CLIENT_SECRET')
+OIDC_OP_DOMAIN = env('OIDC_DOMAIN')
+OIDC_OP_AUTHORIZATION_ENDPOINT = env('OIDC_AUTHORIZATION_ENDPOINT')
+OIDC_OP_TOKEN_ENDPOINT = env('OIDC_TOKEN_ENDPOINT')
+OIDC_OP_USER_ENDPOINT = env('OIDC_USER_ENDPOINT')
+OIDC_OP_JWKS_ENDPOINT = env('OIDC_JWKS_ENDPOINT')
+OIDC_RP_SIGN_ALGO = 'RS256'
+OIDC_RP_SCOPES = 'openid email profile'
+# OIDC_OP_LOGOUT_URL_METHOD = 'accounts.views.custom_logout_url'
+
+# URL Configuration
+LOGIN_URL = 'oidc_authentication_init'
+LOGOUT_REDIRECT_URL = 'http://localhost:8000/'
+LOGIN_REDIRECT_URL = '/'
+CACHE_MIDDLEWARE_SECONDS = 0
+
+# Africa's Talking Settings
+AFRICASTALKING_USERNAME = env('AFRICASTALKING_USERNAME')
+AFRICASTALKING_API_KEY = env('AFRICASTALKING_API_KEY')
+
+# Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+ADMIN_EMAIL = env('ADMIN_EMAIL')
 
 MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
@@ -64,6 +108,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 SOCIALACCOUNT_PROVIDERS = {
     'openid_connect': {
@@ -87,7 +142,7 @@ ROOT_URLCONF = 'ecommerce.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,17 +156,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -131,18 +188,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
@@ -153,3 +208,44 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Session Settings
+SESSION_COOKIE_AGE = 28800  # 8 hours = 8 * 60 * 60 seconds
+SESSION_COOKIE_SECURE = False  #TODO: True in production
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Optional: Expire session on browser close
+SESSION_SAVE_EVERY_REQUEST = True  # Reset expiration timer on every request
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs.log'),
+            'formatter': 'verbose',
+            'maxBytes': 1024*1024*5,  # 5MB
+            'backupCount': 5,
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'orders': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

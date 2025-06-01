@@ -23,15 +23,21 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id} - {self.get_status_display()}"
 
+    @property
+    def total_price(self):
+        if self.total:  # If we have a pre-calculated total
+            return self.total
+        return sum(item.price * item.quantity for item in self.items.all())
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField()
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         unique_together = ('order', 'product')
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} @ {self.unit_price}"
+        return f"{self.quantity} x {self.product.name} @ {self.price}"
