@@ -1,11 +1,6 @@
 # Python
 __pycache__/
 *.py[cod]
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
 
 # Virtual environments
 env/
@@ -19,14 +14,9 @@ ENV/
 # Django specific
 *.log
 db.sqlite3
-media/
-staticfiles/
 
 # VSCode
 .vscode/
-
-# macOS
-.DS_Store
 
 # PyCharm
 .idea/
