@@ -1,23 +1,23 @@
-# k8s/deployment.yml
+#k8s/deployment.yml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ecommerce-web
+  name: ecommerce-app
+  labels:
+    app: ecommerce
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: ecommerce
-      tier: web
   template:
     metadata:
       labels:
         app: ecommerce
-        tier: web
     spec:
       containers:
-        - name: web
-          image: your-registry/ecommerce:latest
+        - name: ecommerce
+          image: ghcr.io/your-username/your-repo:latest
           ports:
             - containerPort: 8000
           envFrom:
@@ -32,5 +32,17 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
       imagePullSecrets:
-        - name: regcred
+        - name: ghcr-secret

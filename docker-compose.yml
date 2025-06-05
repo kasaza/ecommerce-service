@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 config.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 ecommerce.wsgi:application
     volumes:
       - .:/app
     ports:
@@ -12,41 +10,19 @@ services:
       - .env
     depends_on:
       - db
-      - redis
+    restart: unless-stopped
 
   db:
-    image: postgres:13
+    image: postgres:14
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=ecommerce
-
-  redis:
-    image: redis:6
-
-  celery:
-    build: .
-    command: celery -A config worker -l info
-    volumes:
-      - .:/app
     env_file:
       - .env
-    depends_on:
-      - db
-      - redis
-
-  celery-beat:
-    build: .
-    command: celery -A config beat -l info
-    volumes:
-      - .:/app
-    env_file:
-      - .env
-    depends_on:
-      - db
-      - redis
+    restart: unless-stopped
 
 volumes:
   postgres_data:

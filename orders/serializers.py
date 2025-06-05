@@ -3,6 +3,8 @@ from decimal import Decimal
 
 from django.db import transaction
 from rest_framework import serializers
+from django.core.mail import send_mail
+from ecommerce import settings
 from orders.models import Order, OrderItem
 from products.models import Product
 
@@ -54,4 +56,22 @@ class OrderSerializer(serializers.ModelSerializer):
             order.total = total
             order.save()
 
+            # Send notification
+            self.send_order_notification(order)
+
             return order
+
+    def send_order_notification(self, order):
+        """Send email notification about the new order"""
+        subject = f'New Order #{order.id}'
+        message = f'A new order has been created with total ${order.total}.'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = [settings.ADMIN_EMAIL]
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=recipient_list,
+            fail_silently=True,
+        )
