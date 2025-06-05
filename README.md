@@ -16,7 +16,7 @@ A complete e-commerce API with OpenID Connect authentication, product management
 - ✅ Admin dashboard for management
 - ✅ SMS/Email notifications
 
-## API Documentation
+## API Documentation.
 
 ### Base URL
 `http://localhost:8000/api/`
