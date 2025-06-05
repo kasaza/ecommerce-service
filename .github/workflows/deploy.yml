@@ -44,10 +44,10 @@ jobs:
       - name: Create Kubernetes Secrets
         run: |
           kubectl create secret generic ecommerce-secrets \
-            --from-literal=DB_NAME=${{ secrets.DB_NAME }} \
-            --from-literal=DB_USER=${{ secrets.DB_USER }} \
-            --from-literal=DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            --from-literal=SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            --from-literal=DB_NAME="${{ secrets.DB_NAME }}" \
+            --from-literal=DB_USER="${{ secrets.DB_USER }}" \
+            --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            --from-literal=SECRET_KEY="${{ secrets.SECRET_KEY }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy to EKS
