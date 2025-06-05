@@ -4,6 +4,31 @@ kind: ConfigMap
 metadata:
   name: ecommerce-config
 data:
-  DJANGO_SETTINGS_MODULE: "ecommerce.settings.production"
+  DJANGO_SETTINGS_MODULE: "ecommerce.settings"
+  DEBUG: "false"
+  ALLOWED_HOSTS: ".intelisav.com,localhost,127.0.0.1"
   STATIC_URL: "/static/"
   MEDIA_URL: "/media/"
+  AWS_REGION: "eu-west-1"
+  ECR_REPO_URI: "861437268510.dkr.ecr.eu-west-1.amazonaws.com/ecommerce-service"
+
+  # Auth0 / OIDC
+  OIDC_DOMAIN: "dev-l1u4es0lrhavw006.us.auth0.com"
+  OIDC_AUTHORIZATION_ENDPOINT: "https://dev-l1u4es0lrhavw006.us.auth0.com/authorize"
+  OIDC_TOKEN_ENDPOINT: "https://dev-l1u4es0lrhavw006.us.auth0.com/oauth/token"
+  OIDC_USER_ENDPOINT: "https://dev-l1u4es0lrhavw006.us.auth0.com/userinfo"
+  OIDC_JWKS_ENDPOINT: "https://dev-l1u4es0lrhavw006.us.auth0.com/.well-known/jwks.json"
+
+  # Email
+  EMAIL_HOST: "smtp.example.com"
+  EMAIL_PORT: "587"
+  EMAIL_USE_TLS: "true"
+  DEFAULT_FROM_EMAIL: "jeffmwn@gmail.com"
+  ADMIN_EMAIL: "kasazax@gmail.com"
+
+  # DB
+  DB_HOST: "db"
+  DB_PORT: "5432"
+
+  USE_ENV_FILE: "false"
+
