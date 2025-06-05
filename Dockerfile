@@ -24,10 +24,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application source
 COPY . .
 
-# Create staticfiles directory and collect static files
-RUN mkdir -p /app/staticfiles && \
-    python manage.py collectstatic --noinput
-
 EXPOSE 8000
 
 CMD ["gunicorn", "--chdir", "ecommerce", "--bind", "0.0.0.0:8000", "ecommerce.wsgi:application"]
