@@ -2,12 +2,12 @@ services:
   web:
     build: .
     environment:
-      - SECRET_KEY=your_production_or_dev_key
+      - SECRET_KEY="5@w_7b)-6(5pwnk31#$6)#*!(6xo7#o)oax%*j1b1s@my98*k@5az@"
       - DEBUG=False
       - ALLOWED_HOSTS=*
     command: >
-      sh -c "python manage.py collectstatic --noinput &&
-        gunicorn --bind 0.0.0.0:8000 ecommerce.wsgi:application
+      sh -c "python manage.py collectstatic --noinput && \
+      gunicorn --bind 0.0.0.0:8000 ecommerce.wsgi:application"
     volumes:
       - .:/app
     ports:
