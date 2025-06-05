@@ -14,11 +14,6 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    concurrency:
-      group: ecommerce-deploy
-      cancel-in-progress: true
-
     steps:
       - uses: actions/checkout@v3
 
@@ -53,13 +48,6 @@ jobs:
             --from-literal=DB_USER="${{ secrets.DB_USER }}" \
             --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             --from-literal=SECRET_KEY="${{ secrets.SECRET_KEY }}" \
-            --from-literal=AFRICASTALKING_API_KEY="${{ secrets.AFRICASTALKING_API_KEY }}" \
-            --from-literal=AFRICASTALKING_USERNAME="${{ secrets.AFRICASTALKING_USERNAME }}" \
-            --from-literal=EMAIL_HOST_USER="${{ secrets.EMAIL_HOST_USER }}" \
-            --from-literal=EMAIL_HOST_PASSWORD="${{ secrets.EMAIL_HOST_PASSWORD }}" \
-            --from-literal=OIDC_CLIENT_ID="${{ secrets.OIDC_CLIENT_ID }}" \
-            --from-literal=OIDC_CLIENT_SECRET="${{ secrets.OIDC_CLIENT_SECRET }}" \
-            --from-literal=OIDC_DOMAIN="${{ secrets.OIDC_DOMAIN }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy to EKS
