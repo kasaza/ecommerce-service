@@ -14,6 +14,11 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: ecommerce-deploy
+      cancel-in-progress: true
+
     steps:
       - uses: actions/checkout@v3
 
