@@ -44,7 +44,7 @@ jobs:
       - name: Create Kubernetes Secrets
         run: |
           kubectl create secret generic ecommerce-secrets \
-            --from-literal=DB_PASSWORD="${{ secrets.DATABASE_URL }}" \
+            --from-literal=DATABASE_URL="${{ secrets.DATABASE_URL }}" \
             --from-literal=DB_NAME="${{ secrets.DB_NAME }}" \
             --from-literal=DB_USER="${{ secrets.DB_USER }}" \
             --from-literal=DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
