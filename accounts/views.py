@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from mozilla_django_oidc.contrib.drf import OIDCAuthentication
@@ -73,3 +73,10 @@ def check_auth(request):
 def test_login(request: HttpRequest) -> HttpResponse:
     """Test endpoint to verify authentication status."""
     return HttpResponse(f"Hello {request.user.email or request.user.username}, you are logged in.")
+
+
+def health_check(request):
+    return JsonResponse({
+        'status': 'OK',
+        'message': 'Health check',
+    })

@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 from products.views import CategoryViewSet, ProductViewSet
 from orders.views import OrderViewSet
-from accounts.views import CustomOIDCLoginView, CustomOIDCLogoutView, test_login, check_auth
+from accounts.views import CustomOIDCLoginView, CustomOIDCLogoutView, test_login, check_auth, health_check
 from mozilla_django_oidc import views as oidc_views
 
 router = DefaultRouter()
@@ -24,6 +24,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/check-auth/', check_auth, name='check-auth'),
     path('test-login/', test_login, name='test_login'),
+    path('health/', health_check, name='health-check'),
 ]
 
 
